@@ -2,7 +2,7 @@
 
 #Raspberry conf
 eth=192.168.0.180
-ipint=192.168.102.125
+ipint=192.168.102.127
 hostname=Raspberry8
 
 
@@ -23,7 +23,7 @@ wpa_supplicant -B -i wlan0 -c<(wpa_passphrase "IoTUT" "vp:tppsd44")
 #Forwarding table
 ip address add $eth/24 dev eth0
 ip address add $ipint/24 dev wlan0
-ip route add default via 192.168.102.254 dev
+ip route add default via 192.168.102.254 dev wlan0
 
 #DNS
 sh -c "echo nameserver 212.128.20.252 >> /etc/resolv.conf"
