@@ -120,7 +120,7 @@ const checkSInfo = (buff,src) => {
     if(buff.includes("5043")){
 
         frame = buff.split("5043")[1]
-        console.log(frame)
+        //console.log(frame)
         auxin = parseInt(frame[16]+frame[17]+frame[18]+frame[19],16)
         auxout = parseInt(frame[20]+frame[21]+frame[22]+frame[23],16)
 
@@ -205,10 +205,14 @@ const checkSInfo = (buff,src) => {
                         salidasizq,
                         salidasder2,
                         salidasTotal)
+        
+        console.log("Alguien ha pasado")
+        console.log(param)
 
     }else if(buff.includes("4250")){
 
         frame = buff.split("4250")[1]
+        console.log("Detalle del maximo y minimo:")
         console.log(frame)
         console.log("Maximo: " + parseInt(frame[0]+frame[1]),16)
         console.log("Minimo: " + parseInt(frame[2]+frame[3]),16)
