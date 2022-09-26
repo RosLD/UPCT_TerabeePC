@@ -175,7 +175,11 @@ const checkSInfo = (buff,src) => {
 
         param.timestamp = getFechaCompleta();
         param.sensor = auxsen;
-        param.eventoIO = auxst;
+
+        if(auxst == "Entrada")
+            param.eventoIO = true;
+        else
+            param.eventoIO = false;
 
         param.entradasSensorDer = entradasder;
         param.salidasSensorDer = salidasder;
