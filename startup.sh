@@ -47,3 +47,5 @@ timedatectl set-timezone "Europe/Madrid"
 
 pm2 start app.js
 pm2 start appBLE.js
+
+pm2 delete startup.sh
