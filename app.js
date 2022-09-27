@@ -14,10 +14,21 @@ var job = new CronJob(
 		console.log('Good morning! Restarting both sensors');
         salidastotal = 0
         entradastotal = 0
+
+        salidasder = 0
+        salidasder2 = 0
+        salidasizq = 0
+        entradasder = 0
+        entradasder2 = 0
+        entradasizq = 0
+
         serialport1.write(msg)
         serialport2.write(msg)
         serialport3.write(msg)
 });
+
+console.log("Starting CRON job");
+job.start()
 
 /*MQTT*/
 const options = {
