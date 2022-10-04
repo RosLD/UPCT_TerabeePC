@@ -4,6 +4,7 @@ const { ReadlineParser } = require('@serialport/parser-readline')
 var CronJob = require('cron').CronJob;
 const Database = require("better-sqlite3");
 const mqtt = require("mqtt")
+var cron = require("node-cron");
 const crc8 = require("crc/crc8")
 
 let msg = Buffer.from([0x00,0x55,0x08,0x00,0x00,0x00,0x00,0x7c])
