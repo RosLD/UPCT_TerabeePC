@@ -1,3 +1,4 @@
+const { exec } = require("child_process");
 const { SerialPort } = require('serialport')
 const { ReadlineParser } = require('@serialport/parser-readline')
 var CronJob = require('cron').CronJob;
@@ -349,3 +350,27 @@ parser3.on('data', function(buff){
 serialport1.write(msg)
 serialport2.write(msg)
 serialport3.write(msg)
+
+cron.schedule("*/30 * * * * *", () => {//Keep-alive
+
+    exec(
+      "cat /sys/class/thermal/thermal_zone0/temp",
+      function (error, stdout, stderr) {
+        if (error !== null) {
+          console.log("exec error: " + error);
+        } else {
+          param.entradasSensorDer2 = parseFloat(stdout / 1000);
+          param.sensor="KeepAlive";
+          param.timestamp = getFechaCompleta();
+  
+          
+          client.publish("CRAIUPCT_BLEdata", JSON.stringify(dato));
+          
+  
+        }
+      }
+    );
+  
+  
+  
+  });
