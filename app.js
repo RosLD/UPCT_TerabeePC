@@ -365,7 +365,7 @@ cron.schedule("*/30 * * * * *", () => {//Keep-alive
           param.timestamp = getFechaCompleta();
   
           
-          client.publish("CRAIUPCT_BLEdata", JSON.stringify(dato));
+          client.publish("CRAIUPCT_BLEdata", JSON.stringify(param));
           
   
         }
