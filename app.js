@@ -352,8 +352,8 @@ serialport1.write(msg)
 serialport2.write(msg)
 serialport3.write(msg)
 
-cron.schedule("*/30 * * * * *", () => {//Keep-alive
-
+//cron.schedule("*/30 * * * * *", () => {//Keep-alive
+/*
     exec(
       "cat /sys/class/thermal/thermal_zone0/temp",
       function (error, stdout, stderr) {
@@ -374,4 +374,4 @@ cron.schedule("*/30 * * * * *", () => {//Keep-alive
   
   
   
-  });
+  });*/
