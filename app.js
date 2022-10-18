@@ -8,6 +8,25 @@ var cron = require("node-cron");
 const crc8 = require("crc/crc8")
 
 let msg = Buffer.from([0x00,0x55,0x08,0x00,0x00,0x00,0x00,0x7c])
+let nseq = 0;
+
+/* Timestamp functions*/
+function pad(n, z){
+    z = z || 2;
+  return ('00' + n).slice(-z);
+  }
+  
+  const getFechaCompleta = () => {
+    let d = new Date,
+    dformat =   [d.getFullYear(),
+                pad(d.getMonth()+1),
+                pad(d.getDate())].join('-')+' '+
+                [pad(d.getHours()),
+                pad(d.getMinutes()),
+                pad(d.getSeconds())].join(':');
+  
+    return dformat;
+} 
 
 /** Cron job to restart values */
 var job = new CronJob(
@@ -50,14 +69,15 @@ client.on('connect', function () {
         console.log("Connected to MQTT URL")
   })
 
+let db_name = getFechaCompleta().split(" ")[0]+"_PersonCount.db"
 /*SQLITE3 - Local storagement*/
-const db = new Database("PersonCount.db")
+const db = new Database(db_name)
 const createTable = 
-    "CREATE TABLE IF NOT EXISTS PersonCounter ('Timestamp','IdSensor','EventoIO','entradasDer','entradasIzq','entradasDer2','entradasTotal','salidasDer','salidasIzq','salidasDer2','salidasTotal')";
+    "CREATE TABLE IF NOT EXISTS PersonCounter ('Timestamp','NSeq','IdSensor','EventoIO','entradasDer','entradasIzq','entradasDer2','entradasTotal','salidasDer','salidasIzq','salidasDer2','salidasTotal')";
 db.exec(createTable);
 
 const insertInto = db.prepare(
-    "INSERT INTO PersonCounter (Timestamp,IdSensor,EventoIO,entradasDer,entradasIzq,entradasDer2,entradasTotal,salidasDer,salidasIzq,salidasDer2,salidasTotal) VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+    "INSERT INTO PersonCounter (Timestamp,NSeq,IdSensor,EventoIO,entradasDer,entradasIzq,entradasDer2,entradasTotal,salidasDer,salidasIzq,salidasDer2,salidasTotal) VALUES (?,?,?,?,?,?,?,?,?,?,?)"
 )
 
 
@@ -89,23 +109,7 @@ const serialport3 = new SerialPort({//Derecho2
     flowControl:false
 })
 
-/* Timestamp functions*/
-function pad(n, z){
-    z = z || 2;
-  return ('00' + n).slice(-z);
-  }
-  
-  const getFechaCompleta = () => {
-    let d = new Date,
-    dformat =   [d.getFullYear(),
-                pad(d.getMonth()+1),
-                pad(d.getDate())].join('-')+' '+
-                [pad(d.getHours()),
-                pad(d.getMinutes()),
-                pad(d.getSeconds())].join(':');
-  
-    return dformat;
-} 
+
 
 /** Execution */
 
@@ -208,10 +212,15 @@ const checkSInfo = (buff,src) => {
 
         param.entradasTotal = entradasTotal;
         param.salidasTotal = salidasTotal;
+
+        param.nseq = nseq;
+        
+        nseq++;
         
         client.publish("CRAIUPCTPersonCount",JSON.stringify(param))
 
         insertInto.run(getFechaCompleta(),
+                        nseq,
                         auxsen,
                         auxst,
                         entradasder,
@@ -352,26 +361,32 @@ serialport1.write(msg)
 serialport2.write(msg)
 serialport3.write(msg)
 
-//cron.schedule("*/30 * * * * *", () => {//Keep-alive
-/*
-    exec(
-      "cat /sys/class/thermal/thermal_zone0/temp",
-      function (error, stdout, stderr) {
-        if (error !== null) {
-          console.log("exec error: " + error);
-        } else {
-          param.entradasSensorDer2 = parseFloat(stdout / 1000);
-          param.sensor="KeepAlive";
-          param.timestamp = getFechaCompleta();
-  
-          
-          client.publish("CRAIUPCTPersonCount", JSON.stringify(param));
-          
-  
-        }
+//Keep alive
+let ka = param
+
+setInterval(()=>{
+
+  exec(
+    "cat /sys/class/thermal/thermal_zone0/temp",
+    function (error, stdout, stderr) {
+      if (error !== null) {
+        console.log("exec error: " + error);
+      } else {
+        
+        ka = param
+
+        ka.entradasSensorDer2 = parseFloat(stdout / 1000);  //Metemos la temperatura aqui mismo
+        
+        
+        ka.timestamp = getFechaCompleta()
+        ka.sensor = "KeepAlive"
+      
+
+        client.publish("CRAIUPCTPersonCount", JSON.stringify(ka));
+        
+
       }
-    );
-  
-  
-  
-  });*/
+    }
+  );
+
+}, 30000);
