@@ -77,7 +77,7 @@ const createTable =
 db.exec(createTable);
 
 const insertInto = db.prepare(
-    "INSERT INTO PersonCounter (Timestamp,NSeq,IdSensor,EventoIO,entradasDer,entradasIzq,entradasDer2,entradasTotal,salidasDer,salidasIzq,salidasDer2,salidasTotal) VALUES (?,?,?,?,?,?,?,?,?,?,?)"
+    "INSERT INTO PersonCounter (Timestamp,NSeq,IdSensor,EventoIO,entradasDer,entradasIzq,entradasDer2,entradasTotal,salidasDer,salidasIzq,salidasDer2,salidasTotal) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
 )
 
 
@@ -214,7 +214,7 @@ const checkSInfo = (buff,src) => {
         param.salidasTotal = salidasTotal;
 
         param.nseq = nseq;
-        
+
         nseq++;
         
         client.publish("CRAIUPCTPersonCount",JSON.stringify(param))
