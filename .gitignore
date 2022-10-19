@@ -1,2 +1,5 @@
 /node_modules
 PersonCount.db
+package.json
+*.db
+/databases
