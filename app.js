@@ -35,6 +35,7 @@ var job = new CronJob(
 		console.log('Good morning! Restarting both sensors');
         salidastotal = 0
         entradastotal = 0
+        nseq = 0
 
         salidasder = 0
         salidasder2 = 0
