@@ -387,11 +387,11 @@ setInterval(()=>{
         ka.timestamp = getFechaCompleta()
         ka.sensor = "KeepAlive"
         //Store in sqlite3 aswell
-        
+
         insertInto.run(ka.timestamp,
                         ka.nseq,
                         ka.sensor,
-                        ka.eventoIO,
+                        ka.eventoIO ? "Entrada" : "Salida",
                         ka.entradasSensorDer,
                         ka.entradasSensorIzq,
                         ka.entradasSensorDer2,
