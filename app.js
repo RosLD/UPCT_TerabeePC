@@ -157,6 +157,9 @@ const checkSInfo = (buff,src) => {
                 salidasder = auxout;
                 entradasder = auxin;
                 auxsen = "Right";
+
+                salidasTotal = salidasder + salidasizq
+                entradasTotal = entradasder + entradasizq
                 break;
             
             case 2:
@@ -172,6 +175,10 @@ const checkSInfo = (buff,src) => {
                 salidasizq = auxout;
                 entradasizq = auxin;
                 auxsen = "Left"
+                
+                salidasTotal = salidasder + salidasizq
+                entradasTotal = entradasder + entradasizq
+
                 break;
             
             case 3:
@@ -187,6 +194,9 @@ const checkSInfo = (buff,src) => {
                 salidasder2 = auxout;
                 entradasder2 = auxin;
                 auxsen = "Right2"
+
+                salidasTotal = salidasder2 + salidasizq
+                entradasTotal = entradasder2 + entradasizq
                 break;
 
         }
@@ -207,9 +217,6 @@ const checkSInfo = (buff,src) => {
 
         param.entradasSensorIzq = entradasizq;
         param.salidasSensorIzq = salidasizq;
-
-        salidasTotal = salidasder + salidasizq
-        entradasTotal = entradasder + entradasizq
 
         param.entradasTotal = entradasTotal;
         param.salidasTotal = salidasTotal;
@@ -358,9 +365,7 @@ parser3.on('data', function(buff){
 })
 
 
-serialport1.write(msg)
-serialport2.write(msg)
-serialport3.write(msg)
+
 
 //Keep alive
 let ka = param
@@ -381,7 +386,20 @@ setInterval(()=>{
         
         ka.timestamp = getFechaCompleta()
         ka.sensor = "KeepAlive"
-      
+        //Store in sqlite3 aswell
+        
+        insertInto.run(ka.timestamp,
+                        ka.nseq,
+                        ka.sensor,
+                        ka.eventoIO,
+                        ka.entradasSensorDer,
+                        ka.entradasSensorIzq,
+                        ka.entradasSensorDer2,
+                        ka.entradasTotal,
+                        ka.salidasSensorDer,
+                        ka.entradasSensorIzq,
+                        ka.salidasSensorDer2,
+                        ka.salidasTotal)
 
         client.publish("CRAIUPCTPersonCount", JSON.stringify(ka));
         
