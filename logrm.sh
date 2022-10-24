@@ -6,14 +6,9 @@ pm2 stop all
 rm /root/.pm2/logs/app-out.log
 
 
+cd /home/kali/UPCT_TerabeePC/
 
-
-#id=$(cat /home/kali/intconfig |grep -oP "id=\K.*")
-#
-#ruta="*DatosBLE_"$id".db"
-#aux=$(ls $ruta)
-
-rm /home/kali/UPCT_TerabeePC/databases/*
+rm *.db
 
 pm2 start all
 
