@@ -38,15 +38,15 @@ var job = new CronJob(
         nseq = 0
 
         salidasder = 0
-        salidasder2 = 0
+        //salidasder2 = 0
         salidasizq = 0
         entradasder = 0
-        entradasder2 = 0
+        //entradasder2 = 0
         entradasizq = 0
 
         serialport1.write(msg)
         serialport2.write(msg)
-        serialport3.write(msg)
+        //serialport3.write(msg)
 });
 
 console.log("Starting CRON job");
@@ -55,11 +55,11 @@ job.start()
 /*MQTT*/
 const options = {
     clean: true, // retain session
-connectTimeout: 4000, // Timeout period
-// Authentication information
-clientId: 'Raspberry6_PC',
-username: 'Raspberry6_PC',
-password: 'Raspberry6_PC',
+    connectTimeout: 4000, // Timeout period
+    // Authentication information
+    clientId: 'Raspberry6_PC',
+    username: 'Raspberry6_PC',
+    password: 'Raspberry6_PC',
 }
 
 
@@ -71,6 +71,7 @@ client.on('connect', function () {
   })
 
 let db_name = getFechaCompleta().split(" ")[0]+"_PersonCount.db"
+
 /*SQLITE3 - Local storagement*/
 const db = new Database(db_name)
 const createTable = 
@@ -101,6 +102,7 @@ const serialport2 = new SerialPort({//Izquierdo
     flowControl:false 
 })
 
+/*
 const serialport3 = new SerialPort({//Derecho2
     path : "/dev/ttyACM1",
     baudRate: 115200,
@@ -108,7 +110,7 @@ const serialport3 = new SerialPort({//Derecho2
     stopBits:1,
     dataBits:8,
     flowControl:false
-})
+})*/
 
 
 
@@ -180,7 +182,8 @@ const checkSInfo = (buff,src) => {
                 entradasTotal = entradasder + entradasizq
 
                 break;
-            
+
+            /*
             case 3:
 
                 if(auxin > entradasder2){
@@ -197,7 +200,7 @@ const checkSInfo = (buff,src) => {
 
                 salidasTotal = salidasder2 + salidasizq
                 entradasTotal = entradasder2 + entradasizq
-                break;
+                break;*/
 
         }
 
@@ -346,7 +349,7 @@ parser2.on('data', function(buff){
 })
 
 /** Derecha 2 */
-
+/*
 const parser3 = serialport3.pipe(new ReadlineParser({ delimiter: '4444',
                                                     encoding: "hex" }))
                                                     
@@ -362,7 +365,7 @@ parser3.on('data', function(buff){
     }
       
 
-})
+})*/
 
 
 
@@ -372,40 +375,26 @@ let ka = param
 
 setInterval(()=>{
 
-  exec(
-    "cat /sys/class/thermal/thermal_zone0/temp",
-    function (error, stdout, stderr) {
-      if (error !== null) {
-        console.log("exec error: " + error);
-      } else {
-        
-        ka = param
+    ka = param
+    
+    
+    ka.timestamp = getFechaCompleta()
+    ka.sensor = "KeepAlive"
+    //Store in sqlite3 aswell
 
-        ka.entradasSensorDer2 = parseFloat(stdout / 1000);  //Metemos la temperatura aqui mismo
-        
-        
-        ka.timestamp = getFechaCompleta()
-        ka.sensor = "KeepAlive"
-        //Store in sqlite3 aswell
+    insertInto.run(ka.timestamp,
+                    ka.nseq,
+                    ka.sensor,
+                    ka.eventoIO ? "Entrada" : "Salida",
+                    ka.entradasSensorDer,
+                    ka.entradasSensorIzq,
+                    ka.entradasSensorDer2,
+                    ka.entradasTotal,
+                    ka.salidasSensorDer,
+                    ka.entradasSensorIzq,
+                    ka.salidasSensorDer2,
+                    ka.salidasTotal)
 
-        insertInto.run(ka.timestamp,
-                        ka.nseq,
-                        ka.sensor,
-                        ka.eventoIO ? "Entrada" : "Salida",
-                        ka.entradasSensorDer,
-                        ka.entradasSensorIzq,
-                        ka.entradasSensorDer2,
-                        ka.entradasTotal,
-                        ka.salidasSensorDer,
-                        ka.entradasSensorIzq,
-                        ka.salidasSensorDer2,
-                        ka.salidasTotal)
-
-        client.publish("CRAIUPCTPersonCount", JSON.stringify(ka));
-        
-
-      }
-    }
-  );
+    client.publish("CRAIUPCTPersonCount", JSON.stringify(ka));
 
 }, 30000);
